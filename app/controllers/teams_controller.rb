@@ -17,7 +17,6 @@ class TeamsController < ApplicationController
 
   def edit
     binding.pry
-#    redirect_to team_url(params[:team_id]) # params[:team_id] = nil なので多分エラー
     redirect_to team_url(params[:id]) unless (set_team.owner_id == current_user.id)
   end
 
