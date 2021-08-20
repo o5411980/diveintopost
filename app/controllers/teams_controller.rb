@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy switch_leader]
 
   def index
     @teams = Team.all
@@ -47,6 +47,17 @@ class TeamsController < ApplicationController
 
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
+  end
+
+  def switch_leader
+    if current_user.id == @team.owner_id
+      @team.members.push(@team.owner) unless @team.members.include?(@team.owner)
+      @team.update(owner_id: params[:new_owner_id])
+#      @team.members.delete(@team.owner) #リーダーがメンバーと重複表示されるのを回避する為につけたが、重複表示は回避できるものの、リーダーだけだと所属チームに表示されないのでやめ
+      redirect_to team_url, notice: 'リーダー権限を移動しました！'
+    else
+      redirect_to team_url, notice: 'リーダー権限の移動に失敗しました。'
+    end
   end
 
   private
