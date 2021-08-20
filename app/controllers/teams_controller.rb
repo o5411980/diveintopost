@@ -16,7 +16,6 @@ class TeamsController < ApplicationController
   end
 
   def edit
-    binding.pry
     redirect_to team_url(params[:id]) unless (set_team.owner_id == current_user.id)
   end
 
