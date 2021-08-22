@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy switch_leader]
 
   def index
     @teams = Team.all
@@ -16,8 +16,6 @@ class TeamsController < ApplicationController
   end
 
   def edit
-    binding.pry
-#    redirect_to team_url(params[:team_id]) # params[:team_id] = nil なので多分エラー
     redirect_to team_url(params[:id]) unless (set_team.owner_id == current_user.id)
   end
 
@@ -49,6 +47,17 @@ class TeamsController < ApplicationController
 
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
+  end
+
+  def switch_leader
+    if current_user.id == @team.owner_id
+      AssignMailer.switch_leader_mail(params[:new_owner_email], @team.name).deliver
+      @team.members.push(@team.owner) unless @team.members.include?(@team.owner)
+      @team.update(owner_id: params[:new_owner_id])
+      redirect_to team_url, notice: 'リーダー権限を移動しました！'
+    else
+      redirect_to team_url, notice: 'リーダー権限の移動に失敗しました。'
+    end
   end
 
   private
