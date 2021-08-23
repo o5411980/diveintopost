@@ -12,4 +12,10 @@ class AssignMailer < ApplicationMailer
     @team_name = team_name
     mail to: @email, subject: I18n.t('views.messages.switch_leader')
   end
+
+  def delete_agenda_mail(member, agenda)
+    @email = member.email
+    @agenda_name = agenda.title
+    mail to: @email, subject: I18n.t('views.messages.delete_agenda')
+  end
 end
