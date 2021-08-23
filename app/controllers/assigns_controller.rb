@@ -15,7 +15,6 @@ class AssignsController < ApplicationController
   end
 
   def destroy
-    binding.pry
     assign = Assign.find(params[:id])
     if (find_team(params[:team_id]).owner_id == current_user.id) || (assign.user_id == current_user.id)
       destroy_message = assign_destroy(assign, assign.user)
@@ -65,7 +64,7 @@ class AssignsController < ApplicationController
     change_keep_team(assigned_user, another_team) if assigned_user.keep_team_id == assign.team_id
   end
 
-  def find_team(team_id)
+  def find_team(_team_id)
     Team.friendly.find(params[:team_id])
   end
 end
